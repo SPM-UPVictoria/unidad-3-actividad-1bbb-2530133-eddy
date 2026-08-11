@@ -32,4 +32,9 @@ public class NaveExploracion extends NaveEspacial implements Propulsable {
     public void activarHiperviaje(double factorWarp) throws FallaSistemasException, CombustibleInsuficienteException {
         // TODO: Implementar lógica probabilística y de consumo
     }
+	
+	public void consumirCombustible(double cantidad) {
+    // lógica para reducir combustible
+}
+
 }

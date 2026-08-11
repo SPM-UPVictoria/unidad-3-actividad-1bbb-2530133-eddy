@@ -38,4 +38,8 @@ public class NaveCombate extends NaveEspacial implements Defendible, Atacable {
     public void atacar(Defendible objetivo) throws AstreaException {
         // TODO: Implementar lógica
     }
+	public void consumirCombustible(double cantidad) {
+    // lógica para reducir combustible
+}
+
 }
