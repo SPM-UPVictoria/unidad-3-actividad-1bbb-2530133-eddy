@@ -8,38 +8,78 @@ import com.astrea.core.exceptions.CombustibleInsuficienteException;
 import com.astrea.core.exceptions.EscudoCriticoException;
 
 public class NaveCombate extends NaveEspacial implements Defendible, Atacable {
+
     private double integridadEscudo;
     private double potenciaArma;
 
-    public NaveCombate(String matricula, String modelo, double combustibleInicial, double capacidadCombustible, double potenciaArma) throws AstreaException {
-        super(matricula, modelo, combustibleInicial, capacidadCombustible);
-        // TODO: Implementar asignación
+    public NaveCombate(
+            String matricula,
+            String modelo,
+            double combustibleInicial,
+            double capacidadCombustible,
+            double potenciaArma) throws AstreaException {
+
+        super(
+                matricula,
+                modelo,
+                combustibleInicial,
+                capacidadCombustible
+        );
+
+        this.integridadEscudo = 200.0;
+        this.potenciaArma = potenciaArma;
     }
 
     public double getIntegridadEscudo() {
-        return 0.0; // TODO: Implementar
+        return integridadEscudo;
     }
 
     public double getPotenciaArma() {
-        return 0.0; // TODO: Implementar
+        return potenciaArma;
     }
 
     @Override
-    public void viajar(double distanciaAniosLuz) throws CombustibleInsuficienteException {
-        // TODO: Implementar lógica
+    public void viajar(double distanciaAniosLuz)
+            throws CombustibleInsuficienteException {
+
+        double consumo = distanciaAniosLuz * 2.0;
+
+        if (getCombustible() < consumo) {
+            throw new CombustibleInsuficienteException(
+                    "Combustible insuficiente para realizar el viaje."
+            );
+        }
+
+        consumirCombustible(consumo);
     }
 
     @Override
-    public void recibirImpacto(double potenciaDano) throws EscudoCriticoException {
-        // TODO: Implementar lógica
+    public void recibirImpacto(double potenciaDano)
+            throws EscudoCriticoException {
+
+        integridadEscudo -= potenciaDano;
+
+        if (integridadEscudo < 50.0) {
+            throw new EscudoCriticoException(
+                    "La integridad del escudo es crítica."
+            );
+        }
     }
 
     @Override
-    public void atacar(Defendible objetivo) throws AstreaException {
-        // TODO: Implementar lógica
-    }
-	public void consumirCombustible(double cantidad) {
-    // lógica para reducir combustible
-}
+    public void atacar(Defendible objetivo)
+            throws AstreaException {
 
+        double consumoAtaque = 15.0;
+
+        if (getCombustible() < consumoAtaque) {
+            throw new CombustibleInsuficienteException(
+                    "Combustible insuficiente para atacar."
+            );
+        }
+
+        consumirCombustible(consumoAtaque);
+
+        objetivo.recibirImpacto(potenciaArma);
+    }
 }

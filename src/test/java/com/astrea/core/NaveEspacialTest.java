@@ -1,110 +1,49 @@
-package com.astrea.core.base;
+package com.astrea.core;
 
-import com.astrea.core.exceptions.AstreaException;
-import com.astrea.core.exceptions.CombustibleInsuficienteException;
+import com.astrea.core.base.*;
+import com.astrea.core.naves.*;
+import com.astrea.core.exceptions.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public abstract class NaveEspacial {
+public class NaveEspacialTest {
 
-    private String matricula;
-    private String modelo;
-    private double combustible;
-    private double capacidadCombustible;
-
-    public NaveEspacial(
-            String matricula,
-            String modelo,
-            double combustible,
-            double capacidadCombustible)
-            throws AstreaException {
-
-        if (matricula == null || matricula.trim().isEmpty()) {
-            throw new AstreaException(
-                    "La matrícula no puede estar vacía."
-            );
-        }
-
-        if (modelo == null || modelo.trim().isEmpty()) {
-            throw new AstreaException(
-                    "El modelo no puede estar vacío."
-            );
-        }
-
-        if (capacidadCombustible <= 0) {
-            throw new AstreaException(
-                    "La capacidad de combustible debe ser positiva."
-            );
-        }
-
-        if (combustible < 0) {
-            throw new AstreaException(
-                    "El combustible no puede ser negativo."
-            );
-        }
-
-        if (combustible > capacidadCombustible) {
-            throw new AstreaException(
-                    "El combustible no puede superar la capacidad."
-            );
-        }
-
-        this.matricula = matricula;
-        this.modelo = modelo;
-        this.combustible = combustible;
-        this.capacidadCombustible = capacidadCombustible;
+    // Usaremos NaveCarga para probar los métodos comunes heredados de NaveEspacial
+    @Test
+    public void testCreacionValida() throws AstreaException {
+        NaveEspacial nave = new NaveCarga("NX-01", "Carguero Ligero", 100.0, 500.0, 1000.0);
+        assertEquals("NX-01", nave.getMatricula());
+        assertEquals("Carguero Ligero", nave.getModelo());
+        assertEquals(100.0, nave.getCombustible(), 0.001);
+        assertEquals(500.0, nave.getCapacidadCombustible(), 0.001);
     }
 
-    public String getMatricula() {
-        return matricula;
+    @Test(expected = AstreaException.class)
+    public void testCreacionInvalidaCombustibleExcedeCapacidad() throws AstreaException {
+        new NaveCarga("NX-02", "Carguero", 600.0, 500.0, 1000.0);
     }
 
-    public String getModelo() {
-        return modelo;
+    @Test(expected = AstreaException.class)
+    public void testCreacionInvalidaCapacidadNegativa() throws AstreaException {
+        new NaveCarga("NX-03", "Carguero", 100.0, -500.0, 1000.0);
     }
 
-    public double getCombustible() {
-        return combustible;
+    @Test
+    public void testRepostarExitoso() throws AstreaException {
+        NaveEspacial nave = new NaveCarga("NX-04", "Carguero", 100.0, 500.0, 1000.0);
+        nave.repostarCombustible(50.0);
+        assertEquals(150.0, nave.getCombustible(), 0.001);
     }
 
-    public double getCapacidadCombustible() {
-        return capacidadCombustible;
+    @Test(expected = AstreaException.class)
+    public void testRepostarInvalidoExcedeCapacidad() throws AstreaException {
+        NaveEspacial nave = new NaveCarga("NX-05", "Carguero", 100.0, 500.0, 1000.0);
+        nave.repostarCombustible(450.0); // 100 + 450 = 550 > 500
     }
 
-    public void repostarCombustible(double cantidad)
-            throws AstreaException {
-
-        if (cantidad < 0) {
-            throw new AstreaException(
-                    "La cantidad no puede ser negativa."
-            );
-        }
-
-        if (combustible + cantidad > capacidadCombustible) {
-            throw new AstreaException(
-                    "Se supera la capacidad de combustible."
-            );
-        }
-
-        combustible += cantidad;
+    @Test(expected = AstreaException.class)
+    public void testRepostarInvalidoCantidadNegativa() throws AstreaException {
+        NaveEspacial nave = new NaveCarga("NX-06", "Carguero", 100.0, 500.0, 1000.0);
+        nave.repostarCombustible(-20.0);
     }
-
-    protected void consumirCombustible(double cantidad)
-            throws AstreaException {
-
-        if (cantidad < 0) {
-            throw new AstreaException(
-                    "La cantidad no puede ser negativa."
-            );
-        }
-
-        if (cantidad > combustible) {
-            throw new CombustibleInsuficienteException(
-                    "Combustible insuficiente."
-            );
-        }
-
-        combustible -= cantidad;
-    }
-
-    public abstract void viajar(double distancia)
-            throws AstreaException;
 }
